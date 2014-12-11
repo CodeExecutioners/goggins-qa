@@ -1,0 +1,119 @@
+<script>
+   $('select[name=editlessonsInputType]').change(function () {
+    if ($(this).val() == 'Add') {
+        $('#editType').show();
+    } else {
+        $('#editType').hide();
+    }
+	});
+	
+	$('select[name=editlessonsInputCity]').change(function () {
+    if ($(this).val() == 'Add') {
+        $('#editCity').show();
+    } else {
+        $('#editCity').hide();
+    }
+	});
+	
+
+</script>
+			
+
+<form class="formLesson" name="editLesson" id="editLessonForm">
+		
+					
+
+	<fieldset>
+	<input  type="hidden" id="editlessonId" name="editlessonsId" type="text" value="{{lesson.key.id()}}" required/>
+			 <ul class="nav nav-list">
+				 <li>
+				<label for="editlessonsInputType">Type</label>
+					<select id="editlessonsInputType" name="editlessonsInputType" size="1" required>
+						<option value="" >Select a Type</option>
+						{% for type in types %}
+							
+						{% if type.key.id() == lesson.type_key.id() %}
+							<option value="{{type.key.id()}}" selected>{{type.typename}}</option>
+						{$ else %}
+							<option value="{{type.key.id()}}" >{{type.typename}}</option>
+						{% endfor %}
+						<option value="Add" >Add Type</option>
+					</select>			
+					
+				</li>
+				
+				<li>
+				<div id="editType" style="display:none">
+
+					<label for="editlessonsType">Add New Type:</label>
+					<input  id="editlessonsInputType" name="editlessonsInputNewType" placeholder="ex: Private, Group, Events, etc." type="text" value="" required/>
+					
+				</div>
+				</li>
+				
+				
+				<li>
+				
+				
+				
+					<label for="editlessonsInputCity">City:</label>
+					
+					<select id="editlessonsInputCity" name="editlessonsInputCity" size="1" required>
+						<option value="" >Select a City</option>
+						
+						{% for city in all_cities %}
+							{% if city.key.id() == lesson.city_key.id() %}
+							<option value="{{city.key.id()}}" selected >{{city.cityname}}</option>
+							{% else %}
+							<option value="{{city.key.id()}}"  >{{city.cityname}}</option>
+							{% endif %}
+							
+						
+						{% endfor %}
+						<option value="Add">Add City</option>
+					</select>			
+					
+					</li>
+					<li>
+				
+					<div id="editCity" style="display:none">
+
+						<label for="editlessonsInputNewCity">Add New City:</label>
+						<input  id="editlessonsInputNewCity" name="editlessonsInputNewCity" type="text" value=""/>
+						
+					</div>
+					</li>
+				
+				
+			
+				<li><label for="editlessonsInputLocation">Address:</label>
+					<input  id="editlessonsInputLocation" name="editlessonsInputLocation"  type="text" placeholder="Provide full address (location, street, city, state, zip)" value="{{lesson.location}}" required/>
+				</li>
+				<li><label for="editlessonsInputDate">Date:</label>
+					<input  id="editlessonInputDate" name="editlessonsInputDate" type="text" placeholder="MM/DD/YYYY and/or Day of Week (Sunday-Saturday)" value="{{lesson.date}}"required/>
+				</li>
+				<li><label for="editlessonsInputTime">Time:</label>
+					<input  id="editlessonInputTime" name="editlessonsInputTime" placeholder="ex: 7:00 PM - 8:00 PM" type="text" value="{{lesson.time}}"required/>
+				</li>
+				<li><label for="editlessonsInputCost">Cost ($):</label>
+					<input  id="editlessonInputCost" name="editlessonsInputCost" placeholder="ex: 49/person" type="text" value="{{lesson.cost}}"required/>
+				</li>
+				<li><label for="editlessonsInputDetailsText">Details:</label>
+					<input  id="editlessonInputDetailsText" name="editlessonsInputDetailsText" placeholder="ex: List of dances or lesson's information" value="{{lesson.details}}" type="text" required/>
+					
+				</li>
+				<li><label for="editlessonsInputLink">Link:</label>
+				
+					<input  id="editlessonInputLink" name="editlessonsInputLink" placeholder="ex: http://www.dancingoggin.com" value="{{lesson.link}}"type="text"/>
+				</li>	
+				
+				</ul>
+				<!--<p>
+				<center>
+						<input type="submit" class="button alt" value="Update" />
+				</center>
+				</p>
+				-->
+		</fieldset>
+</form>
+	  

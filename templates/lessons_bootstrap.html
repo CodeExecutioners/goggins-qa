@@ -1,0 +1,653 @@
+{% extends "templates/_base.htm" %}
+
+{% block headercontent %}
+
+</head>
+	<h1><a href="/" id="logo">Goggin Ballroom Dancing <em>Ballroom, Latin, & Swing Lessons
+
+</em></a></h1>
+				
+				<!-- Nav -->
+					<nav id="nav">
+						<ul>
+							<li ><a href="/">Home</a></li>
+							<li ><a href="contact">About Us/Contact</a></li>
+							<li ><a href="resources">Resources</a></li>
+							<li class="current"><a href="lessons">Dance Lessons</a></li>
+							<li ><a href="gift">Gift Certificates</a></li>
+							{% if user %}
+							<li><a href="logout">Logout, {{user}}</a></li>
+							{% else %}
+							<li><a href="login">Login</a></li>
+							{% endif %}	
+						</ul>
+					</nav>
+
+{% endblock %}
+
+
+{% block bodycontent %}
+ <script src="js/admin/lessons.js"></script>
+<!-- Main -->
+
+<script type="text/javascript">
+			function hideshow(which){
+				link1 = document.getElementById('privateLink')
+				link2 = document.getElementById('dropInLink')
+				link3 = document.getElementById('groupLink')
+				defaultLink = document.getElementById('defaultLink')
+				
+				if (which.id=='privateLink') {
+					
+					link1.style.display="block"
+					link2.style.display="none"
+					link3.style.display="none"
+				} else if (which.id=='dropInLink') {
+					
+					link1.style.display="none"
+					link2.style.display="block"
+					link3.style.display="none"
+				} else if (which.id=='groupLink') {
+					
+					link1.style.display="none"
+					link2.style.display="none"
+					link3.style.display="block"
+				}else{
+					
+					link1.style.display="none"
+					link2.style.display="none"
+					link3.style.display="none"
+				}
+			}
+		</script>
+
+
+
+		<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"/>
+<script type="text/javascript"  src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"/>
+ <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css"/>
+  
+  <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+  <script>
+
+ 
+  
+  
+  </script>
+
+
+
+
+<!-- Button trigger modal -->
+		
+<style>
+td.left{
+    text-align: left;
+}
+
+</style>
+
+<section class="wrapper style1">
+<div class="container" >
+
+
+<!-- Modal -->
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div  class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">Add Lesson</h4>
+      </div>
+	 
+		 
+		  <div class="modal-body">
+		
+
+
+		</div>
+		
+	
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button  id="submitLesson" type="button" class="btn btn-primary">Save Changes</button>
+		<!--<input type="submit" id="submitLesson" class="btn btn-primary" value="Save Changes"></button>-->
+      </div>
+	 
+    </div>
+  </div>
+</div>
+
+
+ 
+
+<div class="row">
+
+	
+
+					
+						
+
+	
+<!--TESTING-->
+		<section class="5u">
+			<article id="defaultLink" class="private" style="font-size:14px;display: block;">
+				<h4>Find Lessons, Dances, or Events</h4>
+				<p>Do you want to find a location to learn how to dance and socialize?
+				Check out upcoming lessons and events near you!</p>
+				<ul>
+					<li >Step 1: Select Lesson Type</li>
+					<li>Step 2: Select City</li>
+					<li>Step 3: Go learn and dance!</li> 
+					
+					<li>
+				</ul>
+				<p>View locations, dates, times, costs, and details</p>
+				
+		{% if user %}
+		<h4>Administrator Lesson Guide</h4>
+					
+				<ul>
+				<li>Option 1: Add new lessons by filling out the form</li>
+				
+				<li>
+			
+				<input id="modalButton" type="button" class="addLesson btn btn-primary btn-med" data-toggle="modal" data-target="#myModal"  value="Add Lesson">
+					  
+				</input>
+				
+						</li>
+				<li>Option 2: Select "Edit" to modify lesson information</li></br>
+				<li>Option 3: Select "Delete" to remove lessons </li>
+				</ul>
+			
+		{% endif %}
+				
+			</article>
+
+	</section>
+	<section class="6u">
+		<img class="image featured"src="images/moose_medium.jpg" alt="" />
+	</section>
+	
+</div>
+<div class="row" >
+
+
+    <ul id="myTab" class="nav nav-pills">
+     {% for type in types %}
+			<li><a href="#tabs-{{type.key.id()}}" data-toggle="tab">{{type.typename}}</a></li>
+		
+	{% endfor %}
+    </ul>
+
+    
+	
+	
+</div>
+<div class="row">
+{% for type in types %}
+<div id="myTabContent" class="tab-content">
+
+			
+      <div class="tab-pane fade in" id="tabs-{{type.key.id()}}">
+			
+			<ul id="myInnerTab" class="nav nav-pills">
+	
+		
+					{% for city in cities %}
+					
+					 {% set exists = [] %}
+					 {% for lesson in lessons %}
+						
+						{% if (lesson.city_key.id() not in exists) and (lesson.city_key == city.key) and (lesson.type_key == type.key)%}
+							{% do exists.append(city.key.id()) %}
+						
+						
+						<li>
+						<a href="#innertabs-{{city.key.id()}}" data-toggle="tab">{{city.cityname}}</a>
+						</li>
+						<!--Lesson KEY:{{lesson.key}} CITY KEY: {{lesson.city_key}}-->
+						{% endif %}
+						{% endfor %}
+						
+					{% endfor %}
+				
+			  </ul>
+			  
+			  
+
+
+
+<div id="myInnerTabContent" class="tab-content">
+
+
+ {% for city in cities %}
+				   <div id="innertabs-{{city.key.id()}}">
+				   
+				   {% for lesson in lessons %}
+						{% if (lesson.city_key == city.key) and (lesson.type_key == type.key)%}
+							{% if user %}
+							
+							<div>
+							<input id ="id{{lesson.key.id()}}"type="button" class="editLesson btn-primary btn-sm" data-toggle="modal" data-target="#myModal" value="Edit">
+											
+										</input>
+										<input id ="id{{lesson.key.id()}}"type="button" class="deleteLesson btn-primary btn-sm" data-toggle="modal" data-target="#myModal" value="Delete">
+											
+							</input>
+							</div>
+							
+							{% endif %}
+							
+							<table class="table thcenter table-condensed table-striped table-bordered table-hover" >
+								
+							
+							
+									<thead>
+									<tr class="info">
+									<th class="thcenter" style="width:33%">Address</th>
+									<th class="thcenter"style="width:33%">Date(s)</th>
+									<th class="thcenter"style="width:33%">Time(s)</th>
+									</tr>
+									</thead>
+								<tbody>
+								<tr>
+								<td>{{lesson.location}}</td>
+								<td>{{lesson.date}}</td>
+								<td>{{lesson.time}}</td>
+								</tr>
+								<tr>
+								
+								
+								<thead>
+									<tr class="info thcenter">
+									<th class="thcenter"colspan='2'>Details</th>
+									<th class="thcenter">Cost ($)</th>
+									</tr>
+									</thead>
+									
+								</tr>
+								<tr>
+								<td colspan='2'>
+								
+								{{lesson.details}}
+								</td>
+								<td>{{lesson.cost}}</td>
+								</tr>
+								
+								
+								<tr>
+								<thead>
+									<tr class="info">
+									<th class="thcenter"colspan ="3">Link</th>
+							
+									
+									</tr>
+									</thead>
+								</tr>
+								
+								<tr>
+								<td colspan="3">
+								{% if lesson.link!="" %}
+								<a href="{{lesson.link}}">{{lesson.link}}</a>
+								{% else %}
+								None
+								{% endif %}
+								</td>
+								
+								
+								</tr>
+								<tr>
+								<thead>
+									<tr class="info">
+									<th class="thcenter"colspan ="3">Directions</th>
+							
+									
+									</tr>
+								</thead>
+								<td colspan="3">
+								<form action="http://maps.google.com/maps" method="get" target="_blank">
+													<center>
+													<p>Enter your starting address:</p>
+													
+													<input style="width:75%"type="text" name="saddr" required/>
+													<input type="hidden" name="daddr" value="{{lesson.location}}" required/>
+													<input  style="padding:2px" type="submit" value="Get Directions" />
+													</center>
+												</form>
+							
+								</td>
+								
+								</tr>
+								
+								
+								</tbody>
+								</table>
+								</center>
+						{% endif %}
+					{% endfor %}
+				   
+				  </div>
+			{% endfor %}
+			
+		
+			  </div>
+
+
+
+</div>
+
+			  
+			  
+	  </div>
+	
+	  
+	  
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+    </div>
+	
+
+
+
+
+<div id="myInnerTabContent" class="tab-content">
+
+
+ {% for city in cities %}
+				   <div id="innertabs-{{city.key.id()}}">
+				   
+				   {% for lesson in lessons %}
+						{% if (lesson.city_key == city.key) and (lesson.type_key == type.key)%}
+							{% if user %}
+							
+							<div>
+							<input id ="id{{lesson.key.id()}}"type="button" class="editLesson btn-primary btn-sm" data-toggle="modal" data-target="#myModal" value="Edit">
+											
+										</input>
+										<input id ="id{{lesson.key.id()}}"type="button" class="deleteLesson btn-primary btn-sm" data-toggle="modal" data-target="#myModal" value="Delete">
+											
+							</input>
+							</div>
+							
+							{% endif %}
+							
+							<table class="table thcenter table-condensed table-striped table-bordered table-hover" >
+								
+							
+							
+									<thead>
+									<tr class="info">
+									<th class="thcenter" style="width:33%">Address</th>
+									<th class="thcenter"style="width:33%">Date(s)</th>
+									<th class="thcenter"style="width:33%">Time(s)</th>
+									</tr>
+									</thead>
+								<tbody>
+								<tr>
+								<td>{{lesson.location}}</td>
+								<td>{{lesson.date}}</td>
+								<td>{{lesson.time}}</td>
+								</tr>
+								<tr>
+								
+								
+								<thead>
+									<tr class="info thcenter">
+									<th class="thcenter"colspan='2'>Details</th>
+									<th class="thcenter">Cost ($)</th>
+									</tr>
+									</thead>
+									
+								</tr>
+								<tr>
+								<td colspan='2'>
+								
+								{{lesson.details}}
+								</td>
+								<td>{{lesson.cost}}</td>
+								</tr>
+								
+								
+								<tr>
+								<thead>
+									<tr class="info">
+									<th class="thcenter"colspan ="3">Link</th>
+							
+									
+									</tr>
+									</thead>
+								</tr>
+								
+								<tr>
+								<td colspan="3">
+								{% if lesson.link!="" %}
+								<a href="{{lesson.link}}">{{lesson.link}}</a>
+								{% else %}
+								None
+								{% endif %}
+								</td>
+								
+								
+								</tr>
+								<tr>
+								<thead>
+									<tr class="info">
+									<th class="thcenter"colspan ="3">Directions</th>
+							
+									
+									</tr>
+								</thead>
+								<td colspan="3">
+								<form action="http://maps.google.com/maps" method="get" target="_blank">
+													<center>
+													<p>Enter your starting address:</p>
+													
+													<input style="width:75%"type="text" name="saddr" required/>
+													<input type="hidden" name="daddr" value="{{lesson.location}}" required/>
+													<input  style="padding:2px" type="submit" value="Get Directions" />
+													</center>
+												</form>
+							
+								</td>
+								
+								</tr>
+								
+								
+								</tbody>
+								</table>
+								</center>
+						{% endif %}
+					{% endfor %}
+				   
+				  </div>
+			{% endfor %}
+			
+		
+			  </div>
+
+
+
+</div>
+{% endfor %}
+
+	<!--
+	<div class="tabs 12u" style="border:none">
+			
+			 
+			
+		  <ul>
+			{% for type in types %}
+			<li>
+			<a href="#tabs-{{type.key.id()}}">{{type.typename}}</a>
+			{% if user %}
+			
+			<button style="background-color:rgb(229, 121, 121)" id="id{{type.key.id()}}"type="button" class="deleteType">X	</button>
+			{% endif %}
+			</li>
+			{% endfor %}
+			
+		  </ul>
+  
+		  {% for type in types %}
+		  <div id="tabs-{{type.key.id()}}">
+			  <div class="tabs 12u">
+			  
+			  
+			  
+			  <ul>
+					{% for city in cities %}
+					
+					 {% set exists = [] %}
+					 {% for lesson in lessons %}
+						
+						{% if (lesson.city_key.id() not in exists) and (lesson.city_key == city.key) and (lesson.type_key == type.key)%}
+							{% do exists.append(city.key.id()) %}
+						
+						
+						<li>
+						<a href="#tabs-{{city.key.id()}}">{{city.cityname}}</a>
+						</li>
+						
+						{% endif %}
+						{% endfor %}
+						
+					{% endfor %}
+			  </ul>
+			  {% for city in cities %}
+				   <div id="tabs-{{city.key.id()}}">
+				   
+				   {% for lesson in lessons %}
+						{% if (lesson.city_key == city.key) and (lesson.type_key == type.key)%}
+							{% if user %}
+							
+							<div>
+							<input id ="id{{lesson.key.id()}}"type="button" class="editLesson btn-primary btn-sm" data-toggle="modal" data-target="#myModal" value="Edit">
+											
+										</input>
+										<input id ="id{{lesson.key.id()}}"type="button" class="deleteLesson btn-primary btn-sm" data-toggle="modal" data-target="#myModal" value="Delete">
+											
+							</input>
+							</div>
+							
+							{% endif %}
+							
+							<table class="table thcenter table-condensed table-striped table-bordered table-hover" >
+								
+							
+							
+									<thead>
+									<tr class="info">
+									<th class="thcenter" style="width:33%">Address</th>
+									<th class="thcenter"style="width:33%">Date(s)</th>
+									<th class="thcenter"style="width:33%">Time(s)</th>
+									</tr>
+									</thead>
+								<tbody>
+								<tr>
+								<td>{{lesson.location}}</td>
+								<td>{{lesson.date}}</td>
+								<td>{{lesson.time}}</td>
+								</tr>
+								<tr>
+								
+								
+								<thead>
+									<tr class="info thcenter">
+									<th class="thcenter"colspan='2'>Details</th>
+									<th class="thcenter">Cost ($)</th>
+									</tr>
+									</thead>
+									
+								</tr>
+								<tr>
+								<td colspan='2'>
+								
+								{{lesson.details}}
+								</td>
+								<td>{{lesson.cost}}</td>
+								</tr>
+								
+								
+								<tr>
+								<thead>
+									<tr class="info">
+									<th class="thcenter"colspan ="3">Link</th>
+							
+									
+									</tr>
+									</thead>
+								</tr>
+								
+								<tr>
+								<td colspan="3">
+								{% if lesson.link!="" %}
+								<a href="{{lesson.link}}">{{lesson.link}}</a>
+								{% else %}
+								None
+								{% endif %}
+								</td>
+								
+								
+								</tr>
+								<tr>
+								<thead>
+									<tr class="info">
+									<th class="thcenter"colspan ="3">Directions</th>
+							
+									
+									</tr>
+								</thead>
+								<td colspan="3">
+								<form action="http://maps.google.com/maps" method="get" target="_blank">
+													<center>
+													<p>Enter your starting address:</p>
+													
+													<input style="width:75%"type="text" name="saddr" required/>
+													<input type="hidden" name="daddr" value="{{lesson.location}}" required/>
+													<input  style="padding:2px" type="submit" value="Get Directions" />
+													</center>
+												</form>
+							
+								</td>
+								
+								</tr>
+								
+								
+								</tbody>
+								</table>
+								</center>
+						{% endif %}
+					{% endfor %}
+				   
+				  </div>
+			{% endfor %}
+			  </div>
+			  
+		   </div>
+		  {% endfor %}
+
+	</div>
+
+</div>
+ -->
+	
+
+	</div>
+
+</section>
+
+
+ 
+
+{% endblock %}

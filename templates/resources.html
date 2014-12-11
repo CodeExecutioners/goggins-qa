@@ -1,0 +1,280 @@
+{% extends "templates/_base.htm" %}
+
+{% block headercontent %}
+
+	<h1><a href="/" id="logo">Goggin Ballroom Dancing <em>Ballroom, Latin, & Swing Lessons
+
+</em></a></h1>
+				
+				<!-- Nav -->
+					<nav id="nav">
+						<ul>
+							<li ><a href="/">Home</a></li>
+							<li ><a href="contact">About Us/Contact</a></li>
+							<li class="current"><a href="resources">Resources</a></li>
+							<li><a href="lessons">Dance Lessons</a></li>
+							<li ><a href="gift">Gift Certificates</a></li>
+							{% if user %}
+							<li><a href="logout">Logout, {{user}}</a></li>
+							{% else %}
+							<li><a href="login">Login</a></li>
+							{% endif %}	
+						</ul>
+					</nav>
+
+{% endblock %}
+
+
+
+{% block bodycontent %}
+
+<link rel="stylesheet" href="css/resources.css" />
+		
+		<script type="text/javascript">
+			function hideshow(which){
+			
+				var resArray = [];
+				document.getElementById('link1').style.display="none"
+				
+			
+				{% for resource in resources %}
+					res = document.getElementById('{{resource.key.id()}}')
+					resArray.push(res)
+				{% endfor %}
+				
+				var i = 0
+				{% for resource in resources %}
+					if (which.id=='{{resource.key.id()}}') {
+						resArray[i].style.display="block"
+					}else{
+						resArray[i].style.display="none"
+					}
+					i = i + 1
+				{% endfor %}
+			}
+			
+			function autoGrow (oField) {
+				if (oField.scrollHeight > oField.clientHeight) {
+				oField.style.height = oField.scrollHeight + "px";
+				}G
+			}
+		</script>
+		<!-- Main -->
+		
+
+			<section class="wrapper style1">
+				<div class="container">
+					<div class="row double">
+						<div class="4u">
+							<div id="sidebar">
+
+								<!-- Sidebar -->
+									
+									<section>
+										<h3>Links</h3>
+
+										{% for resource in resources %}
+											{% if resource.type == 'link' %}
+												<ul><a href="javascript:hideshow(document.getElementById('{{resource.key.id()}}'))">{{resource.title}}</a></ul>
+											{% endif %}
+												
+										{% endfor %}
+										
+										<h3>Locations</h3>
+										{% for resource in resources %}
+											{% if resource.type == 'location' %}
+												<ul><a href="javascript:hideshow(document.getElementById('{{resource.key.id()}}'))">{{resource.title}}</a></ul>
+											{% endif %}
+										{% endfor %}
+									</section>
+						
+							</div>
+						</div>
+
+						<div class="8u skel-cell-important">
+							<div id="content">
+
+								<!-- Content -->
+								
+								<article id="link1" style="display: block;">
+										<header>
+											<h2>Resources</h2>
+										</header>
+										<p>Click on the link or location you want to access. 
+										</p>
+								</article>
+								
+	
+								
+								
+							{% if not user %}
+								{% for resource in resources %}
+									{% if resource.type == 'link' %}
+									<article id="{{resource.key.id()}}" style="display: none;">
+										<header>
+											<a href="{{resource.linkOrAddress}}">
+											<h2>{{resource.title}}</h2>
+											</a>
+										</header>
+										<a href="{{resource.linkOrAddress}}">
+											{{resource.linkOrAddress}}
+										</a>
+										<textarea readonly> {{resource.desc}} </textarea>
+									</article>
+									{% endif %}
+								{% endfor %}
+								
+								{% for resource in resources %}
+									{% if resource.type == 'location' %}
+									<article id="{{resource.key.id()}}" style="display: none;">
+										<header>
+											<h2>{{resource.title}}</h2>
+										</header>
+										<textarea readonly> {{resource.desc}} </textarea>
+									
+									<form action="http://maps.google.com/maps" method="get" target="_blank">
+													<h1>Get Directions</h1>
+													<p>Enter your starting address:</p>
+													<input type="text" name="saddr" />
+													<input type="hidden" name="daddr" value="{{resource.linkOrAddress}}" />
+													<input type="submit" value="Get Directions" />
+												</form>
+									</article>
+									{% endif %}
+									
+								{% endfor %}
+							{% endif %}	
+								
+							</div>
+							
+							{% if user %}
+								{% for resource in resources %}
+										{% if resource.type == 'link' %}
+												<article id="{{resource.key.id()}}" style="display: none;">
+											
+													<form class="cmxform" id="resForm{{resource.key.id()}}" method="post" action="/adminResources" onsubmit="setTimeout(function () { window.location.reload(); }, 100)">
+														<div class="8u skel-cell-important">
+														 <fieldset>
+																<div class="12u">
+																	
+																	  <label for="resTitle">Link Title</label>
+																	  <input id="resTitle" name="resTitle" type="text" value="{{resource.title}}" required/>
+																	
+																</div>
+																<div class="12u">
+																	
+																	  <label for="resAddress">Link Address</label>
+																	  <input id="resAddress" name="resAddress" type="text" value="{{resource.linkOrAddress}}" required/>
+																	
+																</div>
+																<div class="12u">
+																	
+																	  <label for="resDesc">Link Description</label>
+																	  <textarea  id="resDesc" name="resDesc" form="resForm{{resource.key.id()}}">{{resource.desc}}</textarea>
+																	
+																</div>
+																<input type="hidden" name="resType" value="{{resource.type}}" />
+																<input type="hidden" name="resID" value="{{resource.key.id()}}" />
+																<input class="submit" type="submit" name="Update" value="Update"/>
+																<input class="submit" type="submit" name="Delete" value="Delete"/>
+																
+														  </fieldset>
+														
+													</form>			
+										
+											</article>
+										{% endif %}
+									{% endfor %}
+									
+									{% for resource in resources %}
+										{% if resource.type == 'location' %}
+										<article id="{{resource.key.id()}}" style="display: none;">
+											<form class="cmxform" id="resForm{{resource.key.id()}}" method="post" action="/adminResources" onsubmit="setTimeout(function () { window.location.reload(); }, 100)">
+												<div class="8u skel-cell-important">
+												 <fieldset>
+														<div class="12u">
+															
+															  <label for="resTitle">Location Title</label>
+															  <input id="resTitle" name="resTitle" type="text" value="{{resource.title}}" required/>
+															
+														</div>
+														<div class="12u">
+															
+															  <label for="resAddress">Location Address</label>
+															  <input id="resAddress" name="resAddress" type="text" value="{{resource.linkOrAddress}}" required/>
+															
+														</div>
+														<div class="12u">
+															
+															  <label for="resDesc">Location Description</label>
+															  <textarea  id="resDesc" name="resDesc" form="resForm{{resource.key.id()}}">{{resource.desc}}</textarea>
+															
+														</div>
+														<input type="hidden" name="resType" value="{{resource.type}}" />
+														<input type="hidden" name="resID" value="{{resource.key.id()}}" />
+														<input class="submit" type="submit" name="Update" value="Update"/>
+														<input class="submit" type="submit" name="Delete" value="Delete"/>
+														
+												  </fieldset>
+												
+											</form>	
+										</article>
+												
+										{% endif %}
+										
+									{% endfor %}
+								{% endif %}
+							
+						</div>
+					{% if user %}
+						<div class="container">
+							<form class="cmxform" id="newResourceForm" method="post" action="/adminResources" onsubmit="setTimeout(function () { window.location.reload(); }, 100)">
+
+									 <fieldset>		 
+										<legend>Add a new resource</legend>
+										
+											<div class="12u">
+												
+												 <label for="resType">Resource Type</label>
+												 <select id="resType" name="resType" size="1" required>
+												  <option value="">Select a type</option>
+												  
+												  <option value="link">link</option>
+												  <option value="location">location</option>
+											
+												</select>
+												
+											</div>
+										
+											<div class="12u">
+												
+												  <label for="resTitle">Title</label>
+												  <input id="resTitle" name="resTitle" type="text" required/>
+												
+											</div>
+											<div class="12u">
+												
+												  <label for="resAddress">Resource Address</label>
+												  <input id="resAddress" name="resAddress" type="text" required/>
+												
+											</div>
+											<div class="12u">
+												
+												  <label for="resDesc">Resource Description</label>
+												  <textarea  id="resDesc" name="resDesc" form="newResourceForm"></textarea>
+												
+											</div>
+											<input type="hidden" name="resID" value="000" />
+											 <input class="submit" type="submit" value="Add"/>
+											
+									  </fieldset>
+									
+								</form>
+						</div>
+					{% endif %}
+						
+					</div>
+				</div>
+			</section>			
+
+{% endblock %}
